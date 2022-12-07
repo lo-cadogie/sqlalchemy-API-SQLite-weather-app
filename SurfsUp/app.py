@@ -33,21 +33,20 @@ def home():
         f"/api/v1.0/precipitation<br/>"
 
         #Add a link
-        f"<a href='/api/v1.0/precipitation'>api/v1.0/precipitation</a><br/>"
+        f"<a href='/api/v1.0/precipitation'>click here for precipitation</a><br/>"
 
         f"/api/v1.0/stations<br/>"
-        f"<a href='/api/v1.0/stations'>api/v1.0/stations</a><br/>"
+        f"<a href='/api/v1.0/stations'>click here for stations</a><br/>"
 
         f"/api/v1.0/tobs<br/>"
-        f"<a href='/api/v1.0/tobs'>api/v1.0/tobs</a><br/>"
+        f"<a href='/api/v1.0/tobs'>click here for tobs</a><br/>"
 
 
-        f"The format for start and end date is mm-dd-yyyy<br/>"
+        f"The format for start and end date is mmddyyyy<br/>"
         f"/api/v1.0/start<br/>"
-        f"<a href='/api/v1.0/start'>api/v1.0/start</a><br/>"
 
         f"/api/v1.0/start/end<br/>"
-        f"<a href='/api/v1.0/start/end'>api/v1.0/start/end</a><br/>"
+
     )
 
 @app.route("/api/v1.0/precipitation")
@@ -121,13 +120,9 @@ def tobs():
 
 @app.route("/api/v1.0/<start>")
 @app.route("/api/v1.0/<start>/<end>")
-def start_end(start=None, end=None):   
-
+def end(start=None, end=None):   
     # Create our session (link) from Python to the DB
-
-
     session = Session(engine)
-
 
     # Select Variable
     sel = [func.min(measurement.tobs), func.avg(measurement.tobs), func.max(measurement.tobs)]
@@ -138,9 +133,10 @@ def start_end(start=None, end=None):
         results = session.query(*sel).\
             filter(measurement.date >= start).all()
 
-        temps = list(np.ravel(results))
         session.close()
-        #return(start)
+
+        temps = list(np.ravel(results))
+        
         return jsonify(temps)
 
     # Query if start and end
@@ -151,12 +147,10 @@ def start_end(start=None, end=None):
         filter(measurement.date >= start).\
         filter(measurement.date <= end).all()
 
-
-    temps = list(np.ravel(results))
     session.close()
+    temps = list(np.ravel(results))
+
     return jsonify(temps=temps)
-    
-    #return(start, end)
 
 
 if __name__ == "__main__":
